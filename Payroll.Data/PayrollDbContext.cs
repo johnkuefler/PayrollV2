@@ -10,25 +10,12 @@ namespace Payroll.Data
 
         public PayrollDbContext()
         {
-            _connectionString = "some connection string";
         }
 
         public PayrollDbContext(DbContextOptions<PayrollDbContext> options)
             : base(options)
         {
-        }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!string.IsNullOrEmpty(_connectionString))
-            {
-                optionsBuilder.UseSqlServer(_connectionString);
-            }
-
-            if (optionsBuilder.IsConfigured == false)
-            {
-                base.OnConfiguring(optionsBuilder);
-            }
         }
 
         public virtual DbSet<Employee> Employees { get; set; }

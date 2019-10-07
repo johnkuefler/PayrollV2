@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PayrollProcessor
 {
-    public class FakeHttpClient
+    public class HttpClient
     {
         public string GetAsJson(string url)
         {
