@@ -49,13 +49,13 @@ namespace PayrollProcessor
 
                 string taxRateJson =
                     httpClient.GetAsJson(
-                        $"https://fakeapi.com/api/tax?salary={salary}&zip={employee.ZipCode}");
+                        $"https://dev-squared.com/api/tax?salary={salary}&zip={employee.ZipCode}");
 
                 TaxBracket taxBracket = JsonConvert.DeserializeObject<TaxBracket>(taxRateJson);
 
                 string insuranceJson =
                     httpClient.GetAsJson(
-                        $"https://fakeapi.com/api/insurance?id={employee.Id}");
+                        $"https://dev-squared.com/api/insurance?id={employee.Id}");
 
                 InsuranceAmounts insuranceAmounts = JsonConvert.DeserializeObject<InsuranceAmounts>(insuranceJson);
 
