@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +34,7 @@ namespace PayrollProcessor
             string payFileOutput = "Employee Id|Total Hours|Health Amount|Life Amount|Tax Rate|Base Pay|Net Pay\r\n";
 
             DateTime startDateTime = Convert.ToDateTime("10/6/2019");
-            DateTime endDateTime = Convert.ToDateTime("10/12/2019");
+            DateTime endDateTime = Convert.ToDateTime("10/20/2019");
 
             List<TimeCard> timeCards = new List<TimeCard>();
             timeCards = context.TimeCards
@@ -48,14 +49,14 @@ namespace PayrollProcessor
                 HttpClient httpClient = new HttpClient();
 
                 string taxRateJson =
-                    httpClient.GetAsJson(
-                        $"https://dev-squared.com/api/tax?salary={salary}&zip={employee.ZipCode}");
+                    httpClient.GetStringAsync(
+                        $"https://payroll.getsandbox.com/api/v1/taxrate?salary={salary}&zip={employee.ZipCode}").Result;
 
                 TaxBracket taxBracket = JsonConvert.DeserializeObject<TaxBracket>(taxRateJson);
 
                 string insuranceJson =
-                    httpClient.GetAsJson(
-                        $"https://dev-squared.com/api/insurance?id={employee.Id}");
+                    httpClient.GetStringAsync(
+                        $"https://payroll.getsandbox.com/api/v1/benefits?id={employee.Id}").Result;
 
                 InsuranceAmounts insuranceAmounts = JsonConvert.DeserializeObject<InsuranceAmounts>(insuranceJson);
 
