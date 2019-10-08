@@ -50,13 +50,13 @@ namespace PayrollProcessor
 
                 string taxRateJson =
                     httpClient.GetStringAsync(
-                        $"https://payroll.getsandbox.com/api/v1/taxrate?salary={salary}&zip={employee.ZipCode}").Result;
+                        $"https://test.mocktopus.dev-squared.com/payroll/api/taxrate?salary={salary}&zip={employee.ZipCode}").Result;
 
                 TaxBracket taxBracket = JsonConvert.DeserializeObject<TaxBracket>(taxRateJson);
 
                 string insuranceJson =
                     httpClient.GetStringAsync(
-                        $"https://payroll.getsandbox.com/api/v1/benefits?id={employee.Id}").Result;
+                        $"https://test.mocktopus.dev-squared.com/payroll/api/benefits?id={employee.Id}").Result;
 
                 InsuranceAmounts insuranceAmounts = JsonConvert.DeserializeObject<InsuranceAmounts>(insuranceJson);
 
