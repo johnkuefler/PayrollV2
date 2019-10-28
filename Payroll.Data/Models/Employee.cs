@@ -10,6 +10,15 @@ namespace Payroll.Data.Models
         public string Name { get; set; }
         public bool Seniority { get; set; }
         public double HourlyRate { get; set; }
+
+        public double Salary
+        {
+            get
+            {
+               return HourlyRate * 40 * 52;
+            }
+        }
+
         public string ZipCode { get; set; }
         public bool InsuranceBeforeTaxes { get; set; }
         public virtual ICollection<TimeCard> TimeCards { get; set; }

@@ -23,11 +23,11 @@ namespace PayrollProcessor
             return insuranceAmounts;
         }
 
-        public  TaxBracket GetTaxBracket(double salary, Employee employee)
+        public  TaxBracket GetTaxBracket(Employee employee)
         {
             string taxRateJson =
                 _httpClient.GetStringAsync(
-                        $"https://test.mocktopus.dev-squared.com/payroll/api/taxrate?salary={salary}&zip={employee.ZipCode}")
+                        $"https://test.mocktopus.dev-squared.com/payroll/api/taxrate?salary={employee.Salary}&zip={employee.ZipCode}")
                     .Result;
 
             TaxBracket taxBracket = JsonConvert.DeserializeObject<TaxBracket>(taxRateJson);

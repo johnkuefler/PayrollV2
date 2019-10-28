@@ -6,6 +6,6 @@ namespace PayrollProcessor
     public interface IHRService
     {
         InsuranceAmounts GetInsuranceAmounts(Employee employee);
-        TaxBracket GetTaxBracket(double salary, Employee employee);
+        TaxBracket GetTaxBracket( Employee employee);
     }
 }

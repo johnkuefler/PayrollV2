@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
-using PayrollProcessor.Models;
 
 namespace PayrollProcessor
 {
@@ -9,11 +8,13 @@ namespace PayrollProcessor
     {
         private IPayrollService _payrollService;
         private IHRService _hrService;
+        private IPayrollCalculator _payrollCalculator;
 
-        public PayrollProcessor(IPayrollService payrollService, IHRService hrService)
+        public PayrollProcessor(IPayrollService payrollService, IHRService hrService, IPayrollCalculator payrollCalculator)
         {
             _payrollService = payrollService;
             _hrService = hrService;
+            _payrollCalculator = payrollCalculator;
         }
 
         public void ProcessPayroll(DateTime startDateTime, DateTime endDateTime)
@@ -26,39 +27,15 @@ namespace PayrollProcessor
             {
                 var employee = _payrollService.GetEmployeeByTimeCard(timeCard);
 
-                double salary = employee.HourlyRate * 40 * 52;
-
-                var taxBracket = _hrService.GetTaxBracket(salary, employee);
-
                 var insuranceAmounts = _hrService.GetInsuranceAmounts(employee);
 
-                // calculate net payroll amount
-                double netPay = 0;
-                double basePay = timeCard.TotalHours * employee.HourlyRate;
-                if (employee.Seniority)
-                {
-                    basePay += 100;
-                }
+                var taxBracket = _hrService.GetTaxBracket(employee);
 
-                if (employee.InsuranceBeforeTaxes)
-                {
-                    netPay = basePay;
-                    netPay -= insuranceAmounts.Health;
-                    netPay -= insuranceAmounts.Life;
-                    netPay = netPay * (1 - taxBracket.TaxRate);
-                }
-                else
-                {
-                    netPay = basePay * (1 - taxBracket.TaxRate);
-                    netPay -= insuranceAmounts.Health;
-                    netPay -= insuranceAmounts.Life;
-                }
-
+                var payroll = _payrollCalculator.Calculate(employee, taxBracket, insuranceAmounts, timeCard);
 
                 payFileOutput +=
-                    $"{employee.Id}|{timeCard.TotalHours}|${insuranceAmounts.Health}|${insuranceAmounts.Life}|{taxBracket.TaxRate}|${basePay}|${netPay}\r\n";
+                    $"{employee.Id}|{timeCard.TotalHours}|${insuranceAmounts.Health}|${insuranceAmounts.Life}|{taxBracket.TaxRate}|${payroll.BasePay}|${payroll.NetPay}\r\n";
             }
-
 
             Console.WriteLine(payFileOutput);
 
@@ -66,7 +43,5 @@ namespace PayrollProcessor
 
             Console.ReadLine();
         }
-
-    
     }
 }
