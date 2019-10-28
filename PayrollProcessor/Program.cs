@@ -37,8 +37,9 @@ namespace PayrollProcessor
 
             IPayrollService payrollService = new SqlPayrollService(context);
             IHRService hrService = new OracleHRService(httpClient);
+            IPayrollCalculator payrollCalculator = new PayrollCalculator();
 
-            PayrollProcessor processor = new PayrollProcessor(payrollService, hrService);
+            PayrollProcessor processor = new PayrollProcessor(payrollService, hrService, payrollCalculator);
 
             processor.ProcessPayroll(startDateTime, endDateTime);
         }

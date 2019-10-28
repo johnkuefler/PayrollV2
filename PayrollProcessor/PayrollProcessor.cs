@@ -19,6 +19,11 @@ namespace PayrollProcessor
 
         public void ProcessPayroll(DateTime startDateTime, DateTime endDateTime)
         {
+            if (startDateTime > endDateTime)
+            {
+                throw new Exception("Start date cannot be after end date");
+            }
+
             string payFileOutput = "Employee Id|Total Hours|Health Amount|Life Amount|Tax Rate|Base Pay|Net Pay\r\n";
 
             var timeCards = _payrollService.GetTimeCardsByDate(startDateTime, endDateTime);
@@ -40,8 +45,6 @@ namespace PayrollProcessor
             Console.WriteLine(payFileOutput);
 
             // send 
-
-            Console.ReadLine();
         }
     }
 }
