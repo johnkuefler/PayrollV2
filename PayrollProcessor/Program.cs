@@ -32,6 +32,10 @@ namespace PayrollProcessor
             PayrollCalculator payrollCalculator = new PayrollCalculator();
 
             PayrollDbContext context = new PayrollDbContext(optionsBuilder.Options);
+          
+            HttpClient httpClient = new HttpClient();
+
+            IHrService hrService =new OracleHrService(httpClient);
 
             string payFileOutput = "Employee Id|Total Hours|Health Amount|Life Amount|Tax Rate|Base Pay|Net Pay\r\n";
 
@@ -48,7 +52,6 @@ namespace PayrollProcessor
 
                 double salary = employee.HourlyRate * 40 * 52;
 
-                HttpClient httpClient = new HttpClient();
 
                 string taxRateJson =
                     httpClient.GetStringAsync(
@@ -62,7 +65,9 @@ namespace PayrollProcessor
 
                 InsuranceAmounts insuranceAmounts = JsonConvert.DeserializeObject<InsuranceAmounts>(insuranceJson);
 
-                var employeePay = payrollCalculator.Calculate(employee, taxBracket, insuranceAmounts, timeCard);
+                MealDeduction mealDeduction = hrService.GetDiningDeductionForEmployee(employee.Id);
+
+                var employeePay = payrollCalculator.Calculate(employee, taxBracket, insuranceAmounts, timeCard, mealDeduction);
 
                 payFileOutput +=
                     $"{employee.Id}|{timeCard.TotalHours}|${insuranceAmounts.Health}|${insuranceAmounts.Life}|{taxBracket.TaxRate}|${employeePay.BasePay}|${employeePay.NetPay}\r\n";

@@ -8,6 +8,6 @@ namespace PayrollProcessor
 {
     public interface IPayrollCalculator
     {
-        EmployeePayroll Calculate(Employee employee, TaxBracket taxBracket, InsuranceAmounts insuranceAmounts, TimeCard timeCard);
+        EmployeePayroll Calculate(Employee employee, TaxBracket taxBracket, InsuranceAmounts insuranceAmounts, TimeCard timeCard, MealDeduction mealDeduction);
     }
 }

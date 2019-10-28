@@ -13,13 +13,18 @@ namespace PayrollProcessor
 
         }
 
-        public EmployeePayroll Calculate(Employee employee, TaxBracket taxBracket, InsuranceAmounts insuranceAmounts, TimeCard timeCard)
+        public EmployeePayroll Calculate(Employee employee, TaxBracket taxBracket, InsuranceAmounts insuranceAmounts, TimeCard timeCard, MealDeduction mealDeduction)
         {
             double netPay = 0;
             double basePay = timeCard.TotalHours * employee.HourlyRate;
             if (employee.Seniority)
             {
                 basePay += 100;
+            }
+
+            if (mealDeduction.Deduction)
+            {
+                basePay -= 20;
             }
 
             if (employee.InsuranceBeforeTaxes)
