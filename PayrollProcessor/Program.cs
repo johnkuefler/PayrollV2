@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,6 +28,8 @@ namespace PayrollProcessor
             DbContextOptionsBuilder<PayrollDbContext> optionsBuilder = new DbContextOptionsBuilder<PayrollDbContext>();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             #endregion
+
+            PayrollCalculator payrollCalculator = new PayrollCalculator();
 
             PayrollDbContext context = new PayrollDbContext(optionsBuilder.Options);
 
@@ -59,31 +62,10 @@ namespace PayrollProcessor
 
                 InsuranceAmounts insuranceAmounts = JsonConvert.DeserializeObject<InsuranceAmounts>(insuranceJson);
 
-                // calculate net payroll amount
-                double netPay = 0;
-                double basePay = timeCard.TotalHours * employee.HourlyRate;
-                if (employee.Seniority)
-                {
-                    basePay += 100;
-                }
-
-                if (employee.InsuranceBeforeTaxes)
-                {
-                    netPay = basePay;
-                    netPay -= insuranceAmounts.Health;
-                    netPay -= insuranceAmounts.Life;
-                    netPay = netPay * (1 - taxBracket.TaxRate);
-                }
-                else
-                {
-                    netPay = basePay * (1 - taxBracket.TaxRate);
-                    netPay -= insuranceAmounts.Health;
-                    netPay -= insuranceAmounts.Life;
-                }
-
+                var employeePay = payrollCalculator.Calculate(employee, taxBracket, insuranceAmounts, timeCard);
 
                 payFileOutput +=
-                    $"{employee.Id}|{timeCard.TotalHours}|${insuranceAmounts.Health}|${insuranceAmounts.Life}|{taxBracket.TaxRate}|${basePay}|${netPay}\r\n";
+                    $"{employee.Id}|{timeCard.TotalHours}|${insuranceAmounts.Health}|${insuranceAmounts.Life}|{taxBracket.TaxRate}|${employeePay.BasePay}|${employeePay.NetPay}\r\n";
             }
 
             
