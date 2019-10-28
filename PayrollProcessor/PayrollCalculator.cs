@@ -38,8 +38,8 @@ namespace PayrollProcessor
 
             return new EmployeePayroll
             {
-                NetPay = netPay,
-                BasePay = basePay
+                NetPay = Math.Round(netPay, 2),
+                BasePay = Math.Round(basePay,2)
             };
         }
     }
