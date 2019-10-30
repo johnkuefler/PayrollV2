@@ -35,24 +35,28 @@ namespace PayrollProcessor
             DateTime startDateTime = Convert.ToDateTime("10/6/2019");
             DateTime endDateTime = Convert.ToDateTime("10/20/2019");
 
+            // get employee timecards from database
             List<TimeCard> timeCards = new List<TimeCard>();
             timeCards = context.TimeCards
                 .Where(x => x.StartDateTime >= startDateTime && x.EndDateDateTime <= endDateTime).ToList();
 
             foreach (var timeCard in timeCards)
             {
+                // fetch details of employee for timecard from database
                 Employee employee = context.Employees.FirstOrDefault(x => x.Id == timeCard.EmployeeId);
 
                 double salary = employee.HourlyRate * 40 * 52;
 
                 HttpClient httpClient = new HttpClient();
 
+                // get the employee's taxrate from HR system API
                 string taxRateJson =
                     httpClient.GetStringAsync(
                         $"https://test.mocktopus.dev-squared.com/payroll/api/taxrate?salary={salary}&zip={employee.ZipCode}").Result;
 
                 TaxBracket taxBracket = JsonConvert.DeserializeObject<TaxBracket>(taxRateJson);
 
+                // get the employee's insurance deductions from HR system API
                 string insuranceJson =
                     httpClient.GetStringAsync(
                         $"https://test.mocktopus.dev-squared.com/payroll/api/benefits?id={employee.Id}").Result;
@@ -81,7 +85,7 @@ namespace PayrollProcessor
                     netPay -= insuranceAmounts.Life;
                 }
 
-
+                // output to desired format
                 payFileOutput +=
                     $"{employee.Id}|{timeCard.TotalHours}|${insuranceAmounts.Health}|${insuranceAmounts.Life}|{taxBracket.TaxRate}|${basePay}|${netPay}\r\n";
             }
@@ -89,7 +93,7 @@ namespace PayrollProcessor
             
             Console.WriteLine(payFileOutput);
 
-            // send 
+            // send output file wherever needed
 
             Console.ReadLine();
         }
