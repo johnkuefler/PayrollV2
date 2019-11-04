@@ -1,0 +1,24 @@
+Payroll meetings notes 10/7/2019
+
+* We are adding a new deduction option for dining meals
+* If an employee opts into this deduction, they pay $20 per pay period to have up to 5 meals at the cafeteria per week
+* Whether or not this deduction is availabxle for an employee will live in our cloud based ERP system as a true/false flag entered by HR
+* Anyone who does not opt into the dining deduction should have their pay calculated the same still
+* Dining deduction is always before taxes
+* Meal deduction api url: https://payroll.getsandbox.com/api/v1/meal-deduction?id={empid}
+
+
+Sample calculations:
+
+25/hr, 80 hrs period, 20% tax rate, non senior, benefits taken out before taxes (50 health and 50 life)
+Net pay: $1,520.00 (1519.99999433756)
+
+25/hr, 80 hrs period, 20% tax rate, senior, benefits  taken out before taxes (50 health and 50 life)
+Net pay: $1,600.00
+
+25/hr, 80 hrs period, 20% tax rate, senior, benefits  taken out after taxes (50 health and 50 life)
+Net pay: $1,580.00
+
+25/hr, 80 hrs period, 20% tax rate, senior, benefits taken out before taxes (50 health and 50 life), WITH dining deduction
+Net pay: $1,584.00
+
